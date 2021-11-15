@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>A-LOAM + Kitti 数据集</title>
+    <url>/2021/11/09/A-LOAM%E4%B8%8EKITTI/</url>
+    <content><![CDATA[<p>在Ubuntu2004上安装 ros neotic，编译A-LOAM代码并且在kitti数据集上运行</p>
+<span id="more"></span>
+
+<div style="position: relative; width: 100%; height: 0; padding-bottom: 75%;">
+<iframe src="//player.bilibili.com/player.html?aid=891542068&bvid=BV14P4y1j7ae&cid=438577141&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position: absolute; width: 100%; height: 100%; Left: 0; top: 0;" ></iframe></div>
+
+<p><br></p>
+<p>笔者在学习LOAM时使用的是ubuntu 20.04，ROS版本为neotic</p>
+<p>预先需要的知识或技能</p>
+<ul>
+<li>C++编程</li>
+<li><strong>linux使用（ubuntu）</strong></li>
+<li><strong>CMake的使用</strong></li>
+<li><strong>基本的ROS知识</strong><ul>
+<li>ROS工程项目结构</li>
+<li>ROS基本的通信模型</li>
+<li>常用的ROS工具（如rxiv）</li>
+</ul>
+</li>
+<li>点云库PCL的使用</li>
+<li>矩阵计算库Eigen</li>
+<li>优化库Ceres</li>
+<li>常用开发工具（如VSCode的配置和使用）</li>
+</ul>
+<p>如果一些编程库之前没有接触过，不要紧，用到的时候大概学一下就可以了。如果你一眼看下去基本上都不会，建议先把linux, cmake, ros学一下再来。</p>
+<h1 id="1-先认识一下KITTI数据集"><a href="#1-先认识一下KITTI数据集" class="headerlink" title="1. 先认识一下KITTI数据集"></a>1. 先认识一下KITTI数据集</h1><p>可以参考这篇blog：<a href="https://blog.csdn.net/shyjhyp11/article/details/108716681">https://blog.csdn.net/shyjhyp11/article/details/108716681</a></p>
+<p>俗话说巧妇难为无米之炊，搞SLAM肯定先要有数据跑。像我这样的穷比肯定买不起几万块的lidar扫描仪。那就只能上网去白嫖开源数据集。</p>
+<p>kitti是用于自动驾驶场景下的计算机视觉算法测评数据集。</p>
+<p><img src="/BlogImages/image-20211021225907399.png" alt=""></p>
+<ul>
+<li>stereo：双目摄像头采集的信息，得出图像的立体视觉与三维重建</li>
+<li>flow：检测图像像素点的强度随时间的变化，推断出物体的移动速度以及方向</li>
+<li>sceneflow：flow基础上增加三维信息</li>
+<li>depth：深度图以及原始的lidar或RGB-D图像，用于视觉深度评估</li>
+<li><strong>odometry</strong>：视觉里程计部分，包含图像以及lidar数据，我们这里主要就用到odometry下的lidar数据</li>
+<li>object：用于目标检测</li>
+<li>tracking：用于目标跟踪</li>
+<li>road：道路分割数据集</li>
+<li>semantics：语义分割数据集</li>
+<li>raw data：展现了Kitti数据集的典型样本，包含类别: ‘City’, ‘Residential’, ‘Road’, ‘Campus’, ‘Person’。</li>
+</ul>
+<h2 id="1-1-odometry数据集"><a href="#1-1-odometry数据集" class="headerlink" title="1.1 odometry数据集"></a>1.1 odometry数据集</h2><p><img src="/BlogImages/image-20211021231553586.png" alt="image-20211021231553586" style="zoom: 50%;" /></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">官网下载页面</center>
+
+<p>上图是odometry数据集官网下载页面，主要内容有：</p>
+<ul>
+<li>双目灰度图</li>
+<li>双目彩色图</li>
+<li>velodyne雷达扫描仪数据</li>
+<li>标定数据（相机内参以及时间戳）</li>
+<li>ground truth poses</li>
+</ul>
+<p>下载好之后，以某一个sequences为例，数据组织形式为下图所示（dataset表示数据集的根目录）</p>
+<p><img src="/BlogImages/image-20211021231113005.png" alt="image-20211021231113005" style="zoom:50%;" /></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">数据组织形式</center>
+
+
+
+<h2 id="1-2-velodyne-lidar数据"><a href="#1-2-velodyne-lidar数据" class="headerlink" title="1.2 velodyne lidar数据"></a>1.2 velodyne lidar数据</h2><p>velodyne文件夹下的bin文件就是一次扫描出的lidar数据，它存储为二进制文件，分4列，分别为XYZ坐标以及反射强度。</p>
+<p>用PCL CloudViewer 简单写一个读取bin点云并且显示的程序（kitti_data/src/velodyne_bin_viewer.cpp)</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">showVelodyneBinData</span><span class="params">(string filepath)</span> </span>&#123;</span><br><span class="line">    <span class="function">ifstream <span class="title">input</span><span class="params">(filepath, ios::in|ios::binary)</span></span>;</span><br><span class="line">    <span class="keyword">if</span>(!input.<span class="built_in">good</span>())&#123;</span><br><span class="line">        std::cerr &lt;&lt; <span class="string">&quot;Could not read file: &quot;</span> &lt;&lt; filepath &lt;&lt; std::endl;</span><br><span class="line">        <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">    &#125;</span><br><span class="line">    input.<span class="built_in">seekg</span>(<span class="number">0</span>, ios::beg);</span><br><span class="line">    <span class="keyword">float</span> tempValue;</span><br><span class="line">    pcl::PointCloud&lt;pcl::PointXYZI&gt;::<span class="function">Ptr <span class="title">cloud</span><span class="params">(<span class="keyword">new</span> pcl::PointCloud&lt;pcl::PointXYZI&gt;)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(!input.<span class="built_in">eof</span>())&#123;</span><br><span class="line">        pcl::PointXYZI point;</span><br><span class="line">        input.<span class="built_in">read</span>((<span class="keyword">char</span>*)&amp;point.x, <span class="number">3</span>*<span class="built_in"><span class="keyword">sizeof</span></span>(<span class="keyword">float</span>));</span><br><span class="line">        input.<span class="built_in">read</span>((<span class="keyword">char</span>*)&amp;point.intensity, <span class="built_in"><span class="keyword">sizeof</span></span>(<span class="keyword">float</span>));</span><br><span class="line">        cloud-&gt;<span class="built_in">push_back</span>(point);</span><br><span class="line">    &#125;</span><br><span class="line">    input.<span class="built_in">close</span>();</span><br><span class="line">    pcl::<span class="function">visualization::CloudViewer <span class="title">viewer</span><span class="params">(<span class="string">&quot;Cloud Viewer&quot;</span>)</span></span>;</span><br><span class="line">    viewer.<span class="built_in">showCloud</span>(cloud);</span><br><span class="line">    <span class="keyword">while</span>(!viewer.<span class="built_in">wasStopped</span>()) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/BlogImages/image-20211021192732015.png" alt="image-20211021192732015" style="zoom: 33%;" /></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">一次扫描出的点云</center>
+
+<h2 id="1-3-数据集的加载与发布（KittiHelper-）"><a href="#1-3-数据集的加载与发布（KittiHelper-）" class="headerlink" title="1.3 数据集的加载与发布（KittiHelper ）"></a>1.3 数据集的加载与发布（KittiHelper ）</h2><p><em>这里需要用到ROS的知识 发布者与订阅者通信模型</em></p>
+<p>创建一个ROS工程，添加kittiHelper结点，编写对应的launch文件，赋予数据集目录等参数</p>
+<p>其实会ros的话没什么好说的就是发布这几种数据：</p>
+<ul>
+<li>lidar数据：将bin文件读取后转为ros里面的<code>sensor_msgs::PointCloud2</code>就行了</li>
+<li>图像数据：一样的，ros里面有专门处理图像流的类，用就行了</li>
+<li>里程计数据：主要就是ground_truth_poses文件读取后，将矩阵分为表示旋转的四元数以及平移向量赋给ros里面的<code>nav_msgs::Odometry</code>数据类型就可以</li>
+</ul>
+<p><img src="/BlogImages/image-20211022234457805.png" alt="image-20211022234457805" style="zoom: 33%;" /></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">kittiHelper运行时发布的数据</center>
+
+
+
+<h1 id="2-LOAM-Lidar-Odometry-and-Mapping"><a href="#2-LOAM-Lidar-Odometry-and-Mapping" class="headerlink" title="2. LOAM: Lidar Odometry and Mapping"></a>2. LOAM: Lidar Odometry and Mapping</h1><p>这篇文章里面用到的lidar slam算法基于这篇经典的论文：</p>
+<p>LOAM: Lidar Odometry and Mapping in Real-time</p>
+<p>由于本文不可能对论文进行详细的解读（笔者水平还很菜），建议阅读以下原论文了解算法流程。</p>
+<p>原作者曾经提供过代码实现，但是后面处于一些原因删除了。现在网上有很多大神对它的实现，我们这里就用的是github上star数最多的A-LOAM，十分适合slam初学者进行学习。相较于原始版本用很多计算库如Eigen，ceres来简化代码。</p>
+]]></content>
+      <categories>
+        <category>激光SLAM</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>【数学】超定方程的解与奇异值</title>
+    <url>/2021/11/11/math01-super-determined-equations/</url>
+    <content><![CDATA[<h1 id="超定方程解与奇异值"><a href="#超定方程解与奇异值" class="headerlink" title="超定方程解与奇异值"></a>超定方程解与奇异值</h1><p>超定方程 Ax=0 的解与 A 的奇异值之间的关系<br><span id="more"></span></p>
+<script type="math/tex; mode=display">
+Ax=0,\quad 其中A_{m\times n, \ m > n},\quad x_{n\times1}</script><p><mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.025ex" xmlns="http://www.w3.org/2000/svg" width="1.294ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 572 453"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path></g></g></g></svg></mjx-container>的解为 <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: 0" xmlns="http://www.w3.org/2000/svg" width="4.708ex" height="1.904ex" role="img" focusable="false" viewBox="0 -841.7 2080.8 841.7"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="mi"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path></g><g data-mml-node="mi" transform="translate(783,363) scale(0.707)"><path data-c="1D447" d="M40 437Q21 437 21 445Q21 450 37 501T71 602L88 651Q93 669 101 677H569H659Q691 677 697 676T704 667Q704 661 687 553T668 444Q668 437 649 437Q640 437 637 437T631 442L629 445Q629 451 635 490T641 551Q641 586 628 604T573 629Q568 630 515 631Q469 631 457 630T439 622Q438 621 368 343T298 60Q298 48 386 46Q418 46 427 45T436 36Q436 31 433 22Q429 4 424 1L422 0Q419 0 415 0Q410 0 363 1T228 2Q99 2 64 0H49Q43 6 43 9T45 27Q49 40 55 46H83H94Q174 46 189 55Q190 56 191 56Q196 59 201 76T241 233Q258 301 269 344Q339 619 339 625Q339 630 310 630H279Q212 630 191 624Q146 614 121 583T67 467Q60 445 57 441T43 437H40Z"></path></g></g><g data-mml-node="mi" transform="translate(1330.8,0)"><path data-c="1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path></g></g></g></svg></mjx-container> 的最小值对应的特征向量</p>
+<p>推导过程如下：<br><img src="/BlogImages/ax0_svd.png" alt=""></p>
+]]></content>
+      <categories>
+        <category>数学</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>关于我的GitHub Page</title>
+    <url>/2021/11/08/%E5%85%B3%E4%BA%8E%E6%88%91%E7%9A%84GitHub%20Page/</url>
+    <content><![CDATA[<p>聊一聊我用过的个人博客搭建方法以及为什么现在又要做基于Github page做自己的个人博客</p>
+<span id="more"></span>
+<h1 id="我一开始用过的博客平台"><a href="#我一开始用过的博客平台" class="headerlink" title="我一开始用过的博客平台"></a>我一开始用过的博客平台</h1><p>记得最初是大一暑假在腾讯云的在线实验室看到一个基于LAMP框架的个人博客搭建(Linux服务器 + apache/nginx + Mysql + Php/Python)教程。当时感觉挺有意思跟着做了一遍，然后也就有了萌生搭建一个个人博客网站的想法。腾讯云和阿里云都有面向学生的折扣（一折，原价一千多一年的服务器过了学生认证只要一百快一年，虽然是性能最差的但还要啥自行车）。但毕竟折扣过期了原价有点难顶（之前还想这怎么把博客的http换成https，一看要花钱买ssl证书一千多块还是算了）。所以免费的GitHub pages他不香吗</p>
+<p><img src="/BlogImages/aliblog.png" alt=""></p>
+<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">部署在阿里云服务器上的基于wordpress的个人博客(www.yhqiao.xyz)</center>
+
+<h1 id="Github-page与Wordpress的不同"><a href="#Github-page与Wordpress的不同" class="headerlink" title="Github page与Wordpress的不同"></a>Github page与Wordpress的不同</h1><p>wordpress给人的感觉更像是一个成熟的软件，有着完善的用户以及后台管理机制。部署好之后修改主题，发布文章，上传图片文件都很方便。</p>
+<p>GitHub pages原理就是访问git仓库的内容然后转化为网页显示。这就意味着访问到的其实是静态资源，而不是像访问服务器那样能够实时生成动态页面。GitHub pages需要利用hexo框架，在本地编译好静态资源后同步到git仓库实现博文的发布。相关博文的撰写还是要在本地进行。</p>
+<h1 id="之后的规划"><a href="#之后的规划" class="headerlink" title="之后的规划"></a>之后的规划</h1><p>目前先打算逐渐将之前写过的博文从服务器上扒下来，同步到GitHub pages上。最近新学的内容也会做一些更新</p>
+]]></content>
+      <categories>
+        <category>杂谈</category>
+      </categories>
+  </entry>
+</search>
