@@ -118,4 +118,12 @@ Ax=0,\quad 其中A_{m\times n, \ m > n},\quad x_{n\times1}</script><p><mjx-conta
         <category>杂谈</category>
       </categories>
   </entry>
+  <entry>
+    <title>【激光SLAM_2D】01 位姿变换</title>
+    <url>/2021/11/15/lidar-slam-2d-01-pose-transform/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>2D激光SLAM</category>
+      </categories>
+  </entry>
 </search>
