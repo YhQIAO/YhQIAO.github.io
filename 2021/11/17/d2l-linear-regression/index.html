@@ -20,21 +20,19 @@
     var CONFIG = {"hostname":"www.yhqiao.xyz","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="聊一聊我用过的个人博客搭建方法以及为什么现在又要做基于Github page做自己的个人博客">
+  <meta name="description" content="线性回归从0开始的实现">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于我的GitHub Page">
-<meta property="og:url" content="http://www.yhqiao.xyz/2021/11/08/%E5%85%B3%E4%BA%8E%E6%88%91%E7%9A%84GitHub%20Page/index.html">
+<meta property="og:title" content="线性回归从0开始实现">
+<meta property="og:url" content="http://www.yhqiao.xyz/2021/11/17/d2l-linear-regression/index.html">
 <meta property="og:site_name" content="YhQIAO&#39;s Blog">
-<meta property="og:description" content="聊一聊我用过的个人博客搭建方法以及为什么现在又要做基于Github page做自己的个人博客">
+<meta property="og:description" content="线性回归从0开始的实现">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://www.yhqiao.xyz/BlogImages/aliblog.png">
-<meta property="article:published_time" content="2021-11-08T07:33:15.000Z">
-<meta property="article:modified_time" content="2021-11-15T15:04:42.836Z">
+<meta property="article:published_time" content="2021-11-17T11:26:44.000Z">
+<meta property="article:modified_time" content="2021-11-17T11:35:48.828Z">
 <meta property="article:author" content="YhQIAO">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.yhqiao.xyz/BlogImages/aliblog.png">
 
-<link rel="canonical" href="http://www.yhqiao.xyz/2021/11/08/%E5%85%B3%E4%BA%8E%E6%88%91%E7%9A%84GitHub%20Page/">
+<link rel="canonical" href="http://www.yhqiao.xyz/2021/11/17/d2l-linear-regression/">
 
 
 <script id="page-configurations">
@@ -47,7 +45,7 @@
   };
 </script>
 
-  <title>关于我的GitHub Page | YhQIAO's Blog</title>
+  <title>线性回归从0开始实现 | YhQIAO's Blog</title>
   
 
 
@@ -195,7 +193,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.yhqiao.xyz/2021/11/08/%E5%85%B3%E4%BA%8E%E6%88%91%E7%9A%84GitHub%20Page/">
+    <link itemprop="mainEntityOfPage" href="http://www.yhqiao.xyz/2021/11/17/d2l-linear-regression/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -208,7 +206,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          关于我的GitHub Page
+          线性回归从0开始实现
         </h1>
 
         <div class="post-meta">
@@ -217,23 +215,17 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-11-08 15:33:15" itemprop="dateCreated datePublished" datetime="2021-11-08T15:33:15+08:00">2021-11-08</time>
+              <time title="创建时间：2021-11-17 19:26:44 / 修改时间：19:35:48" itemprop="dateCreated datePublished" datetime="2021-11-17T19:26:44+08:00">2021-11-17</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-11-15 23:04:42" itemprop="dateModified" datetime="2021-11-15T23:04:42+08:00">2021-11-15</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E8%B0%88/" itemprop="url" rel="index"><span itemprop="name">杂谈</span></a>
+                  <a href="/categories/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
                 </span>
             </span>
 
@@ -255,15 +247,11 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>聊一聊我用过的个人博客搭建方法以及为什么现在又要做基于Github page做自己的个人博客</p>
+        <p>线性回归从0开始的实现</p>
 <span id="more"></span>
-<h1 id="我一开始用过的博客平台"><a href="#我一开始用过的博客平台" class="headerlink" title="我一开始用过的博客平台"></a>我一开始用过的博客平台</h1><p>记得最初是大一暑假在腾讯云的在线实验室看到一个基于LAMP框架的个人博客搭建(Linux服务器 + apache/nginx + Mysql + Php/Python)教程。当时感觉挺有意思跟着做了一遍，然后也就有了萌生搭建一个个人博客网站的想法。腾讯云和阿里云都有面向学生的折扣（一折，原价一千多一年的服务器过了学生认证只要一百快一年，虽然是性能最差的但还要啥自行车）。但毕竟折扣过期了原价有点难顶（之前还想这怎么把博客的http换成https，一看要花钱买ssl证书一千多块还是算了）。所以免费的GitHub pages他不香吗</p>
-<p><img src="/BlogImages/aliblog.png" alt=""></p>
-<center style="font-size:14px;color:#C0C0C0;text-decoration:underline">部署在阿里云服务器上的基于wordpress的个人博客(www.yhqiao.xyz)</center>
-
-<h1 id="Github-page与Wordpress的不同"><a href="#Github-page与Wordpress的不同" class="headerlink" title="Github page与Wordpress的不同"></a>Github page与Wordpress的不同</h1><p>wordpress给人的感觉更像是一个成熟的软件，有着完善的用户以及后台管理机制。部署好之后修改主题，发布文章，上传图片文件都很方便。</p>
-<p>GitHub pages原理就是访问git仓库的内容然后转化为网页显示。这就意味着访问到的其实是静态资源，而不是像访问服务器那样能够实时生成动态页面。GitHub pages需要利用hexo框架，在本地编译好静态资源后同步到git仓库实现博文的发布。相关博文的撰写还是要在本地进行。</p>
-<h1 id="之后的规划"><a href="#之后的规划" class="headerlink" title="之后的规划"></a>之后的规划</h1><p>目前先打算逐渐将之前写过的博文从服务器上扒下来，同步到GitHub pages上。最近新学的内容也会做一些更新</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 线性回归的从0实现</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">generate dataset</span></span><br><span class="line"><span class="string">real w = [2, -3.4]&#x27;, b = 4.2</span></span><br><span class="line"><span class="string">noise u(0,0.01)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">num_inputs = <span class="number">2</span></span><br><span class="line">num_examples = <span class="number">1000</span></span><br><span class="line">true_w = torch.tensor([<span class="number">2</span>, -<span class="number">3.4</span>])</span><br><span class="line">true_b = <span class="number">4.2</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">synthetic_data</span>(<span class="params">w, b, num_examples</span>):</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;Generate y = Xw + b + noise.&quot;&quot;&quot;</span></span><br><span class="line">    X = torch.normal(<span class="number">0</span>, <span class="number">1</span>, (num_examples, <span class="built_in">len</span>(w)))</span><br><span class="line">    y = torch.matmul(X, w) + b</span><br><span class="line">    y += torch.normal(<span class="number">0</span>, <span class="number">0.01</span>, y.shape)</span><br><span class="line">    <span class="keyword">return</span> X, torch.reshape(y, (-<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">features, labels = synthetic_data(true_w, true_b, <span class="number">1000</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;features:&#x27;</span>, features[<span class="number">0</span>], <span class="string">&#x27;\nlabel:&#x27;</span>,labels[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">plt.scatter(features[:,<span class="number">1</span>].numpy(), labels.detach().numpy(),<span class="number">1</span>)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">data_iter</span>(<span class="params">batch_size, features, labels</span>):</span></span><br><span class="line">    num_examples = <span class="built_in">len</span>(features)</span><br><span class="line">    indices = <span class="built_in">list</span>(<span class="built_in">range</span>(num_examples))</span><br><span class="line">    random.shuffle(indices)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, num_examples, batch_size):</span><br><span class="line">        batch_indices = torch.tensor(</span><br><span class="line">            indices[i:<span class="built_in">min</span>(i+batch_size, num_examples)]</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">yield</span> features[batch_indices], labels[batch_indices]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># init model param</span></span><br><span class="line">w = torch.normal(<span class="number">0</span>, <span class="number">0.01</span>, size=(<span class="number">2</span>,<span class="number">1</span>), requires_grad=<span class="literal">True</span>)</span><br><span class="line">b = torch.zeros(<span class="number">1</span>, requires_grad=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">linreg</span>(<span class="params">X, w, b</span>):</span></span><br><span class="line">    <span class="keyword">return</span> torch.matmul(X, w)+b</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_loss</span>(<span class="params">y_hat, y</span>):</span></span><br><span class="line">    <span class="keyword">return</span> (y_hat-y.reshape(y_hat.shape))**<span class="number">2</span>/<span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sgd</span>(<span class="params">params, lr, batch_size</span>):</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> param <span class="keyword">in</span> params:</span><br><span class="line">            param -= lr*param.grad/batch_size</span><br><span class="line">            param.grad.zero_()</span><br><span class="line"></span><br><span class="line">lr = <span class="number">0.03</span></span><br><span class="line">num_epochs = <span class="number">5</span></span><br><span class="line">net = linreg</span><br><span class="line">loss = square_loss</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(num_epochs):</span><br><span class="line">    <span class="keyword">for</span> X, y <span class="keyword">in</span> data_iter(batch_size=<span class="number">10</span>, features=features, labels=labels):</span><br><span class="line">        l = loss(net(X, w,b),y)</span><br><span class="line">        l.<span class="built_in">sum</span>().backward()</span><br><span class="line">        sgd([w,b], lr, batch_size=<span class="number">10</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        train_l = loss(net(features, w, b),labels)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&#x27;epoch <span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>, loss <span class="subst">&#123;<span class="built_in">float</span>(train_l.mean()):f&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;w estimated error: <span class="subst">&#123;true_w-w.reshape(true_w.shape)&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;b estimated error: <span class="subst">&#123;true_b-b&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>result:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">epoch 1, loss 0.050665</span><br><span class="line">epoch 2, loss 0.000226</span><br><span class="line">epoch 3, loss 0.000055</span><br><span class="line">epoch 4, loss 0.000055</span><br><span class="line">epoch 5, loss 0.000055</span><br><span class="line">w estimated error: tensor([ 0.0004, -0.0003], grad_fn=&lt;SubBackward0&gt;)</span><br><span class="line">b estimated error: tensor([9.9659e-05], grad_fn=&lt;RsubBackward1&gt;)</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -298,11 +286,11 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2021/11/09/A-LOAM%E4%B8%8EKITTI/" rel="next" title="A-LOAM + Kitti 数据集">
-      A-LOAM + Kitti 数据集 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/11/15/lidar-slam-2d-01-pose-transform/" rel="prev" title="【激光SLAM_2D】01 位姿变换">
+      <i class="fa fa-chevron-left"></i> 【激光SLAM_2D】01 位姿变换
     </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -361,7 +349,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E4%B8%80%E5%BC%80%E5%A7%8B%E7%94%A8%E8%BF%87%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%B9%B3%E5%8F%B0"><span class="nav-number">1.</span> <span class="nav-text">我一开始用过的博客平台</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Github-page%E4%B8%8EWordpress%E7%9A%84%E4%B8%8D%E5%90%8C"><span class="nav-number">2.</span> <span class="nav-text">Github page与Wordpress的不同</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%8B%E5%90%8E%E7%9A%84%E8%A7%84%E5%88%92"><span class="nav-number">3.</span> <span class="nav-text">之后的规划</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
